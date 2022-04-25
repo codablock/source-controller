@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -54,7 +55,7 @@ const (
 
 var (
 	testEnv      *testenv.Environment
-	testStorage  *Storage
+	testStorage  *storage.Storage
 	testServer   *testserver.ArtifactServer
 	testMetricsH controller.Metrics
 	ctx          = ctrl.SetupSignalHandler()
@@ -184,22 +185,12 @@ func initTestTLS() {
 	}
 }
 
-func newTestStorage(s *testserver.HTTPServer) (*Storage, error) {
-	storage, err := NewStorage(s.Root(), s.URL(), retentionTTL, retentionRecords)
+func newTestStorage(s *testserver.HTTPServer) (*storage.Storage, error) {
+	storage, err := storage.NewStorage(s.Root(), s.URL(), retentionTTL, retentionRecords)
 	if err != nil {
 		return nil, err
 	}
 	return storage, nil
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz1234567890")
-
-func randStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
 
 func int64p(i int64) *int64 {

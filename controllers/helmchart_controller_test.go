@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"io"
 	"net/http"
 	"os"
@@ -167,7 +168,7 @@ func TestHelmChartReconciler_Reconcile(t *testing.T) {
 func TestHelmChartReconciler_reconcileStorage(t *testing.T) {
 	tests := []struct {
 		name             string
-		beforeFunc       func(obj *sourcev1.HelmChart, storage *Storage) error
+		beforeFunc       func(obj *sourcev1.HelmChart, storage *storage.Storage) error
 		want             sreconcile.Result
 		wantErr          bool
 		assertArtifact   *sourcev1.Artifact
@@ -176,7 +177,7 @@ func TestHelmChartReconciler_reconcileStorage(t *testing.T) {
 	}{
 		{
 			name: "garbage collects",
-			beforeFunc: func(obj *sourcev1.HelmChart, storage *Storage) error {
+			beforeFunc: func(obj *sourcev1.HelmChart, storage *storage.Storage) error {
 				revisions := []string{"a", "b", "c", "d"}
 				for n := range revisions {
 					v := revisions[n]
@@ -214,7 +215,7 @@ func TestHelmChartReconciler_reconcileStorage(t *testing.T) {
 		},
 		{
 			name: "notices missing artifact in storage",
-			beforeFunc: func(obj *sourcev1.HelmChart, storage *Storage) error {
+			beforeFunc: func(obj *sourcev1.HelmChart, storage *storage.Storage) error {
 				obj.Status.Artifact = &sourcev1.Artifact{
 					Path:     "/reconcile-storage/invalid.txt",
 					Revision: "d",
@@ -232,7 +233,7 @@ func TestHelmChartReconciler_reconcileStorage(t *testing.T) {
 		},
 		{
 			name: "updates hostname on diff from current",
-			beforeFunc: func(obj *sourcev1.HelmChart, storage *Storage) error {
+			beforeFunc: func(obj *sourcev1.HelmChart, storage *storage.Storage) error {
 				obj.Status.Artifact = &sourcev1.Artifact{
 					Path:     "/reconcile-storage/hostname.txt",
 					Revision: "f",
@@ -311,7 +312,7 @@ func TestHelmChartReconciler_reconcileSource(t *testing.T) {
 	g.Expect(err).ToNot(HaveOccurred())
 	defer os.RemoveAll(tmpDir)
 
-	storage, err := NewStorage(tmpDir, "example.com", retentionTTL, retentionRecords)
+	storage, err := storage.NewStorage(tmpDir, "example.com", retentionTTL, retentionRecords)
 	g.Expect(err).ToNot(HaveOccurred())
 
 	gitArtifact := &sourcev1.Artifact{
@@ -785,7 +786,7 @@ func TestHelmChartReconciler_buildFromTarballArtifact(t *testing.T) {
 	g.Expect(err).ToNot(HaveOccurred())
 	defer os.RemoveAll(tmpDir)
 
-	storage, err := NewStorage(tmpDir, "example.com", retentionTTL, retentionRecords)
+	storage, err := storage.NewStorage(tmpDir, "example.com", retentionTTL, retentionRecords)
 	g.Expect(err).ToNot(HaveOccurred())
 
 	chartsArtifact := &sourcev1.Artifact{

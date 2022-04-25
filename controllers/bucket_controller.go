@@ -21,6 +21,7 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"os"
 	"path/filepath"
 	"sort"
@@ -117,7 +118,7 @@ type BucketReconciler struct {
 	kuberecorder.EventRecorder
 	helper.Metrics
 
-	Storage        *Storage
+	Storage        *storage.Storage
 	ControllerName string
 }
 

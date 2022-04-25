@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"os"
 	"path/filepath"
 	"strings"
@@ -110,7 +111,7 @@ type GitRepositoryReconciler struct {
 	kuberecorder.EventRecorder
 	helper.Metrics
 
-	Storage        *Storage
+	Storage        *storage.Storage
 	ControllerName string
 
 	requeueDependency time.Duration
@@ -562,7 +563,7 @@ func (r *GitRepositoryReconciler) reconcileArtifact(ctx context.Context,
 	}
 
 	// Archive directory to storage
-	if err := r.Storage.Archive(&artifact, dir, SourceIgnoreFilter(ps, ignoreDomain)); err != nil {
+	if err := r.Storage.Archive(&artifact, dir, storage.SourceIgnoreFilter(ps, ignoreDomain)); err != nil {
 		e := &serror.Event{
 			Err:    fmt.Errorf("unable to archive artifact to storage: %w", err),
 			Reason: sourcev1.ArchiveOperationFailedReason,

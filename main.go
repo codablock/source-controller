@@ -18,6 +18,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"net"
 	"net/http"
 	"os"
@@ -245,7 +246,7 @@ func main() {
 		ControllerName: controllerName,
 		Cache:          c,
 		TTL:            ttl,
-		CacheRecorder: cacheRecorder,
+		CacheRecorder:  cacheRecorder,
 	}).SetupWithManagerAndOptions(mgr, controllers.HelmChartReconcilerOptions{
 		MaxConcurrentReconciles: concurrent,
 		RateLimiter:             helper.GetRateLimiter(rateLimiterOptions),
@@ -298,14 +299,14 @@ func startFileServer(path string, address string, l logr.Logger) {
 	}
 }
 
-func mustInitStorage(path string, storageAdvAddr string, artifactRetentionTTL time.Duration, artifactRetentionRecords int, l logr.Logger) *controllers.Storage {
+func mustInitStorage(path string, storageAdvAddr string, artifactRetentionTTL time.Duration, artifactRetentionRecords int, l logr.Logger) *storage.Storage {
 	if path == "" {
 		p, _ := os.Getwd()
 		path = filepath.Join(p, "bin")
 		os.MkdirAll(path, 0o770)
 	}
 
-	storage, err := controllers.NewStorage(path, storageAdvAddr, artifactRetentionTTL, artifactRetentionRecords)
+	storage, err := storage.NewStorage(path, storageAdvAddr, artifactRetentionTTL, artifactRetentionRecords)
 	if err != nil {
 		l.Error(err, "unable to initialise storage")
 		os.Exit(1)

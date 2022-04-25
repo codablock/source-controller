@@ -21,6 +21,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -116,7 +117,7 @@ type HelmChartReconciler struct {
 	kuberecorder.EventRecorder
 	helper.Metrics
 
-	Storage        *Storage
+	Storage        *storage.Storage
 	Getters        helmgetter.Providers
 	ControllerName string
 

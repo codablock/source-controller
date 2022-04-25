@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"net/http"
 	"net/url"
 	"os"
@@ -1108,7 +1109,7 @@ func TestGitRepositoryReconciler_reconcileInclude(t *testing.T) {
 func TestGitRepositoryReconciler_reconcileStorage(t *testing.T) {
 	tests := []struct {
 		name             string
-		beforeFunc       func(obj *sourcev1.GitRepository, storage *Storage) error
+		beforeFunc       func(obj *sourcev1.GitRepository, storage *storage.Storage) error
 		want             sreconcile.Result
 		wantErr          bool
 		assertArtifact   *sourcev1.Artifact
@@ -1117,7 +1118,7 @@ func TestGitRepositoryReconciler_reconcileStorage(t *testing.T) {
 	}{
 		{
 			name: "garbage collects",
-			beforeFunc: func(obj *sourcev1.GitRepository, storage *Storage) error {
+			beforeFunc: func(obj *sourcev1.GitRepository, storage *storage.Storage) error {
 				revisions := []string{"a", "b", "c", "d"}
 				for n := range revisions {
 					v := revisions[n]
@@ -1155,7 +1156,7 @@ func TestGitRepositoryReconciler_reconcileStorage(t *testing.T) {
 		},
 		{
 			name: "notices missing artifact in storage",
-			beforeFunc: func(obj *sourcev1.GitRepository, storage *Storage) error {
+			beforeFunc: func(obj *sourcev1.GitRepository, storage *storage.Storage) error {
 				obj.Status.Artifact = &sourcev1.Artifact{
 					Path:     "/reconcile-storage/invalid.txt",
 					Revision: "e",
@@ -1173,7 +1174,7 @@ func TestGitRepositoryReconciler_reconcileStorage(t *testing.T) {
 		},
 		{
 			name: "updates hostname on diff from current",
-			beforeFunc: func(obj *sourcev1.GitRepository, storage *Storage) error {
+			beforeFunc: func(obj *sourcev1.GitRepository, storage *storage.Storage) error {
 				obj.Status.Artifact = &sourcev1.Artifact{
 					Path:     "/reconcile-storage/hostname.txt",
 					Revision: "f",

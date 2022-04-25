@@ -21,6 +21,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/fluxcd/source-controller/pkg/storage"
 	"net/url"
 	"time"
 
@@ -101,7 +102,7 @@ type HelmRepositoryReconciler struct {
 	helper.Metrics
 
 	Getters        helmgetter.Providers
-	Storage        *Storage
+	Storage        *storage.Storage
 	ControllerName string
 }
 
